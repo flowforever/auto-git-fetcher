@@ -15,6 +15,7 @@ class ConfigHandler(FileSystemEventHandler):
         self.callback = callback
 
     def on_modified(self, event):
+        print("config.json changes!")
         if event.src_path.endswith(CONFIG_FILE):
             self.callback()
 
@@ -59,9 +60,13 @@ def list_git_projects(folder_path):
 def auto_fetch():
     folders = load_config()
     for folder_path in folders:
-        git_projects = list_git_projects(folder_path)
-        for project in git_projects:
-            fetch_updates(folder_path=project)
+        try:
+            git_projects = list_git_projects(folder_path)
+            for project in git_projects:
+                fetch_updates(folder_path=project)
+        except Exception as e:
+            print(f'Failed to fetch updates for {folder_path}')
+            print(e)
 
 
 def main():
