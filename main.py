@@ -1,6 +1,7 @@
 import os
 import json
 import time
+from datetime import datetime
 from uu import Error
 import git
 import schedule
@@ -9,13 +10,15 @@ from watchdog.events import FileSystemEventHandler
 
 CONFIG_FILE = "config.json"
 
+def get_now():
+    return datetime.now().strftime("%H:%M:%S - %Y/%m/%d")
 
 class ConfigHandler(FileSystemEventHandler):
     def __init__(self, callback):
         self.callback = callback
 
     def on_modified(self, event):
-        print("config.json changes!")
+        print(f"{get_now()} config.json changes!")
         if event.src_path.endswith(CONFIG_FILE):
             self.callback()
 
@@ -26,14 +29,14 @@ def load_config():
             config = json.load(file)
         return config["folders"]
     except (IOError, KeyError, json.JSONDecodeError):
-        print(f"Error loading {CONFIG_FILE} or invalid format.")
+        print(f"{get_now()} Error loading {CONFIG_FILE} or invalid format.")
         return []
 
 
 def fetch_updates(folder_path):
     try:
         repo = git.Repo(folder_path)
-        print(f"Fetching updates for {folder_path}")
+        print(f"{get_now()} Fetching updates for {folder_path}")
         repo.remotes.origin.fetch()
         print(f'----> Successfully fetched updates for {folder_path}')
     except Exception as e:
@@ -70,7 +73,7 @@ def auto_fetch():
 
 
 def main():
-    print('Starting Auto fetcher...')
+    print(f'{get_now()} Starting Auto fetcher...')
     auto_fetch()
 
     event_handler = ConfigHandler(auto_fetch)
