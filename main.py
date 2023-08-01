@@ -36,6 +36,8 @@ def load_config():
 def fetch_updates(folder_path):
     try:
         repo = git.Repo(folder_path)
+        for remote in repo.remotes:
+            print(f'{{"url": "{remote.url}", "folder": "{os.path.basename(folder_path)}" }}')
         if repo.is_dirty():
             print(f"{get_now()} Fetching updates for {folder_path}")
             repo.remotes.origin.fetch()
