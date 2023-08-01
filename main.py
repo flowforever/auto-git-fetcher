@@ -36,9 +36,15 @@ def load_config():
 def fetch_updates(folder_path):
     try:
         repo = git.Repo(folder_path)
-        print(f"{get_now()} Fetching updates for {folder_path}")
-        repo.remotes.origin.fetch()
-        print(f'----> Successfully fetched updates for {folder_path}')
+        if repo.is_dirty():
+            print(f"{get_now()} Fetching updates for {folder_path}")
+            repo.remotes.origin.fetch()
+            print(f'----> Successfully fetched updates for {folder_path}')
+        else:
+            # pull updates
+            print(f"{get_now()} Pulling updates for {folder_path}")
+            repo.remotes.origin.pull()
+            print(f'----> Successfully pulled updates for {folder_path}')
     except Exception as e:
         print(f"----> Failed to fetch updates for {folder_path}")
         print(e)
