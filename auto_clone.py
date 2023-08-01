@@ -1,5 +1,6 @@
 import os
 import json
+from posixpath import isabs
 import git
 import time
 from datetime import datetime
@@ -40,7 +41,14 @@ def main():
         for repo in repositories:
             url = repo["url"]
             if url:
-                download_path = repo["folder"] if repo["folder"] else default_folder
+                folder_name = repo["folder"]
+                download_path = default_folder
+                if folder_name:
+                    if os.path.isabs(folder_name):
+                        download_path = folder_name
+                    else:
+                        download_path = os.path.join(default_folder, folder_name)
+
                 clone_repository(url, download_path)
 
         time.sleep(30)
