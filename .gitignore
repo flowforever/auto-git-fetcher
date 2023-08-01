@@ -2,3 +2,7 @@
 config.json
 *.plist
 .venv
+*.ipynb
+*.pyc
+.ipynb_*
+__pycache__/*
