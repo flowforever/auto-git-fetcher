@@ -4,7 +4,6 @@ import time
 from datetime import datetime
 from uu import Error
 import git
-import schedule
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -12,16 +11,6 @@ CONFIG_FILE = "config.json"
 
 def get_now():
     return datetime.now().strftime("%H:%M:%S - %Y/%m/%d")
-
-class ConfigHandler(FileSystemEventHandler):
-    def __init__(self, callback):
-        self.callback = callback
-
-    def on_modified(self, event):
-        print(f"{get_now()} config.json changes!")
-        if event.src_path.endswith(CONFIG_FILE):
-            self.callback()
-
 
 def load_config():
     try:
@@ -81,25 +70,10 @@ def auto_fetch():
 
 
 def main():
-    print(f'{get_now()} Starting Auto fetcher...')
-    auto_fetch()
-
-    event_handler = ConfigHandler(auto_fetch)
-    observer = Observer()
-    observer.schedule(event_handler, path=".", recursive=False)
-    observer.start()
-
-    schedule.every(5).minutes.do(auto_fetch)
-
-    try:
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-
-    observer.join()
-
+    while True:
+        print(f'{get_now()} Starting Auto fetcher...')
+        auto_fetch()
+        time.sleep(60 * 10)
 
 if __name__ == "__main__":
     main()
